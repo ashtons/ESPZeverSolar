@@ -20,3 +20,5 @@ const char *INVERTER_URL = "http://192.168.1.136/home.cgi";
 
 The sketch polls `INVERTER_URL` every 30 seconds, reads line 11 of the plain text response as watts, and displays it on the LCD.
 
+
+![Sample Result](docs/sample.png)
