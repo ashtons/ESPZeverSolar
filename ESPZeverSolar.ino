@@ -1,15 +1,16 @@
-#include <HTTPClient.h>
 #include <TFT_eSPI.h>
+#include <HTTPClient.h>
 #include <WiFi.h>
 
-const char *WIFI_SSID = "YOUR_SSID";
-const char *WIFI_PASSWORD = "YOUR_PASSWORD";
+const char *WIFI_SSID = "YOUR_WIFI_SSID";
+const char *WIFI_PASSWORD = "YOUR_WIFI_PASSWORD";
 
 const char *INVERTER_URL = "http://192.168.1.136/home.cgi";
 
 const unsigned long REQUEST_INTERVAL_MS = 30000;
-const int POWER_LINE_INDEX = 11; // Zero-based line number. Example response line 12 is "0.6" kW.
-const int TFT_BACKLIGHT_PIN = 4; // Common LilyGO T-Display backlight pin. Set to -1 if your board does not use one.
+const int POWER_LINE_INDEX = 10; // Zero-based line number. Example response line 12 is "0.6" kW.
+const int TFT_BACKLIGHT_PIN = 4;
+#define TFT_GREY 0x5AEB // New colour
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -29,22 +30,22 @@ void drawStatus(const String &status, bool showPower = false, float watts = 0) {
   Serial.println();
 
   tft.fillScreen(TFT_BLACK);
-  tft.setTextColor(TFT_WHITE, TFT_BLACK);
+  tft.setTextColor(TFT_WHITE);
   tft.setTextDatum(MC_DATUM);
 
   tft.setTextSize(2);
   tft.drawString("Zever Solar", tft.width() / 2, 24);
 
   if (showPower) {
-    tft.setTextColor(TFT_GREEN, TFT_BLACK);
+    tft.setTextColor(TFT_GREEN);
     tft.setTextSize(4);
     tft.drawString(String((int)round(watts)) + " W", tft.width() / 2, tft.height() / 2);
 
-    tft.setTextColor(TFT_LIGHTGREY, TFT_BLACK);
+    tft.setTextColor(TFT_LIGHTGREY);
     tft.setTextSize(2);
     tft.drawString(status, tft.width() / 2, tft.height() - 24);
   } else {
-    tft.setTextColor(TFT_YELLOW, TFT_BLACK);
+    tft.setTextColor(TFT_YELLOW);
     tft.setTextSize(2);
     tft.drawString(status, tft.width() / 2, tft.height() / 2);
   }
@@ -113,7 +114,7 @@ bool parsePowerWatts(const String &response, float &watts) {
         return false;
       }
 
-      watts = value.toFloat() * 1000.0f;
+      watts = value.toFloat();
       Serial.print("Power converted to watts: ");
       Serial.println(watts, 0);
       return true;
@@ -188,7 +189,7 @@ void setup() {
 
   tft.init();
   tft.setRotation(1);
-  tft.invertDisplay(true);
+  tft.fillScreen(TFT_GREY);
   Serial.print("LCD initialized. Width: ");
   Serial.print(tft.width());
   Serial.print(", height: ");
